@@ -94,6 +94,7 @@ static dispatch_queue_t WXImageUpdateQueue;
             NSString *matchString = [filter substringWithRange:matchRange];
             if (matchString && matchString.length > 0) {
                 _blurRadius = [matchString doubleValue];
+                [self updateImage];
             }
         }
     }
@@ -212,10 +213,10 @@ static dispatch_queue_t WXImageUpdateQueue;
     __weak typeof(self) weakSelf = self;
     dispatch_async(WXImageUpdateQueue, ^{
         [self cancelImage];
-        
-        void(^downloadFailed)(NSString *, NSError *) = ^void(NSString *url, NSError *error){
+       
+        void(^downloadFailed)(NSString *, NSError *) = ^void(NSString *url, NSError *error) {
             weakSelf.imageDownloadFinish = YES;
-            WXLogError(@"Error downloading image:%@, detail:%@", url, [error localizedDescription]);
+            WXLogError(@"Error downloading image: %@, detail:%@", url, [error localizedDescription]);
         };
         
         [self updatePlaceHolderWithFailedBlock:downloadFailed];

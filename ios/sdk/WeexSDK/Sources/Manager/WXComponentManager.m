@@ -20,6 +20,8 @@
 #import "WXSDKManager.h"
 #import "WXSDKError.h"
 #import "WXInvocationConfig.h"
+#import "WXHandlerFactory.h"
+#import "WXValidateProtocol.h"
 
 static NSThread *WXComponentThread;
 
@@ -100,7 +102,9 @@ static NSThread *WXComponentThread;
     [[NSRunLoop currentRunLoop] addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
     
     while (!_stopRunning) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+        @autoreleasepool {
+            [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+        }
     }
 }
 
@@ -174,17 +178,17 @@ static NSThread *WXComponentThread;
 
 static bool rootNodeIsDirty(void *context)
 {
-    WXComponentManager *mananger = (__bridge WXComponentManager *)(context);
-    return [mananger->_rootComponent needsLayout];
+    WXComponentManager *manager = (__bridge WXComponentManager *)(context);
+    return [manager->_rootComponent needsLayout];
 }
 
 static css_node_t * rootNodeGetChild(void *context, int i)
 {
-    WXComponentManager *mananger = (__bridge WXComponentManager *)(context);
+    WXComponentManager *manager = (__bridge WXComponentManager *)(context);
     if (i == 0) {
-        return mananger->_rootComponent.cssNode;
-    } else if(mananger->_fixedComponents.count > 0) {
-        return ((WXComponent *)((mananger->_fixedComponents)[i-1])).cssNode;
+        return manager->_rootComponent.cssNode;
+    } else if(manager->_fixedComponents.count >= i) {
+        return ((WXComponent *)((manager->_fixedComponents)[i-1])).cssNode;
     }
     
     return NULL;
@@ -316,17 +320,26 @@ static css_node_t * rootNodeGetChild(void *context, int i)
     NSDictionary *styles = data[@"style"];
     NSDictionary *attributes = data[@"attr"];
     NSArray *events = data[@"event"];
-        
+    
+    if (self.weexInstance.needValidate) {
+        id<WXValidateProtocol> validateHandler = [WXHandlerFactory handlerForProtocol:@protocol(WXValidateProtocol)];
+        if (validateHandler) {
+            WXComponentValidateResult* validateResult =  [validateHandler validateWithWXSDKInstance:self.weexInstance component:type];
+            if (validateResult && !validateResult.isSuccess) {
+                type = validateResult.replacedComponent? validateResult.replacedComponent : @"div";
+                WXLogError(@"%@",[validateResult.error.userInfo objectForKey:@"errorMsg"]);
+            }
+        }
+    }
+
     Class clazz = [WXComponentFactory classWithComponentName:type];
     WXComponent *component = [[clazz alloc] initWithRef:ref type:type styles:styles attributes:attributes events:events weexInstance:self.weexInstance];
     WXAssert(component, @"Component build failed for data:%@", data);
     
     [_indexDict setObject:component forKey:component.ref];
-    
+    [component readyToRender];// notify redyToRender event when init
     return component;
 }
-
-#pragma mark Updating
 
 #pragma mark Reset
 -(BOOL)isShouldReset:(id )value
@@ -440,9 +453,13 @@ static css_node_t * rootNodeGetChild(void *context, int i)
     }
 
     CGFloat offset = [[options objectForKey:@"offset"] floatValue];
+    BOOL animated = YES;
+    if ([options objectForKey:@"animated"]) {
+        animated = [[options objectForKey:@"animated"] boolValue];
+    }
     
     [self _addUITask:^{
-        [scrollerComponent scrollToComponent:toComponent withOffset:offset];
+        [scrollerComponent scrollToComponent:toComponent withOffset:offset animated:animated];
     }];
 }
 

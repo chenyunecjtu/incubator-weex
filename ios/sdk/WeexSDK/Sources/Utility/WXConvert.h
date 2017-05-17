@@ -12,6 +12,8 @@
 #import "WXLayoutDefine.h"
 #import "WXType.h"
 
+@class WXLength;
+@class WXBoxShadow;
 @interface WXConvert : NSObject
 
 + (BOOL)BOOL:(id)value;
@@ -24,7 +26,7 @@
  *  750px Adaptive
  */
 typedef CGFloat WXPixelType;
-// @prameter scaleFactor: please use weexInstance's pixelScaleFactor property
+// @parameter scaleFactor: please use weexInstance's pixelScaleFactor property
 + (WXPixelType)WXPixelType:(id)value scaleFactor:(CGFloat)scaleFactor;
 
 + (css_flex_direction_t)css_flex_direction_t:(id)value;
@@ -48,7 +50,7 @@ typedef BOOL WXClipType;
 /**
  * @abstract UIFontWeightRegular ,UIFontWeightBold,etc are not support by the system which is less than 8.2. weex sdk set the float value.
  *
- * @param value, support normal,blod,100,200,300,400,500,600,700,800,900
+ * @param value support normal,blod,100,200,300,400,500,600,700,800,900
  *
  * @return A float value.
  *
@@ -56,6 +58,7 @@ typedef BOOL WXClipType;
 + (CGFloat)WXTextWeight:(id)value;
 + (WXTextDecoration)WXTextDecoration:(id)value;
 + (NSTextAlignment)NSTextAlignment:(id)value;
++ (UIReturnKeyType)UIReturnKeyType:(id)value;
 
 + (WXScrollDirection)WXScrollDirection:(id)value;
 + (UITableViewRowAnimation)UITableViewRowAnimation:(id)value;
@@ -66,6 +69,9 @@ typedef BOOL WXClipType;
 + (WXVisibility)WXVisibility:(id)value;
 
 + (WXGradientType)gradientType:(id)value;
+
++ (WXLength *)WXLength:(id)value isFloat:(BOOL)isFloat scaleFactor:(CGFloat)scaleFactor;
++ (WXBoxShadow *)WXBoxShadow:(id)value scaleFactor:(CGFloat)scaleFactor;
 
 @end
 

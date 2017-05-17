@@ -22,12 +22,12 @@
       <panel title="method = PATCH">
         <text>{{patchResult}}</text>
       </panel>
-    </wxc-panel>
+    </panel>
   </scroller>
 </template>
 
 <script>
-  var stream = require('@weex-module/stream');
+  var stream = weex.requireModule('stream');
   module.exports = {
     data: function () {
       return {

@@ -20,7 +20,7 @@
 </template>
 
 <script>
-  var navigator = require('@weex-module/navigator')
+  var navigator = weex.requireModule('navigator')
   var getBaseURL = require('../include/base-url.js').getBaseURL
   module.exports = {
     data: function () {
@@ -28,7 +28,8 @@
         navBarHeight: 88,
         title: 'Navigator',
         dir: 'examples',
-        baseURL: ''
+        baseURL: '',
+        subPath: weex.config.env.platform === 'Web' ? 'vue-web/' : ''
       }
     },
     components: {
@@ -56,14 +57,14 @@
       },
       push: function () {
         var params = {
-          'url':  this.baseURL + 'vue/components/navigator.js?test=1',
+          'url':  this.baseURL + this.subPath + 'vue/components/navigator.js?test=1',
           'animated' : 'true',
         }
         navigator.push(params, function () {});
       },
       pop: function () {
         var params = {
-          'url':  this.baseURL + 'vue/components/navigator.js?test=1',
+          'url':  this.baseURL + this.subPath + 'vue/components/navigator.js?test=1',
           'animated' : 'true',
         }
         navigator.pop(params, function () {});

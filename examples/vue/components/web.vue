@@ -16,7 +16,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
   .wrapper {
     width: 750;
     position: absolute;
@@ -45,7 +45,7 @@
 </style>
 
 <script>
-  var webview = require('@weex-module/webview');
+  var webview = weex.requireModule('webview');
   module.exports = {
     components: {
       button: require('../include/button.vue')

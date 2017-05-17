@@ -4,7 +4,7 @@
   </list-item>
 </template>
 
-<style>
+<style scoped>
   .item-txt {
     font-size: 48px;
     color: #555;
@@ -12,7 +12,7 @@
 </style>
 
 <script>
-  var event = require('@weex-module/event')
+  var event = weex.requireModule('event')
   module.exports = {
     props: {
       title: { default: '456' },

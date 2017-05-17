@@ -15,7 +15,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
   .title {font-size: 48px;}
 </style>
 
@@ -55,7 +55,7 @@
         // this.$refs['sub'].$emit('custom')
 
         // // find element
-        // var dom = require('@weex-module/dom')
+        // var dom = weex.requireModule('dom')
         // dom.scrollToElement(this.$el('title'), {offset: 0})
       }
     },

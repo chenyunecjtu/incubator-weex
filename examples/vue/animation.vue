@@ -23,7 +23,7 @@
 </template>
 
 <script>
-  var animation = require('@weex-module/animation')
+  var animation = weex.requireModule('animation')
   module.exports = {
     data: function () {
       return {
@@ -43,7 +43,7 @@
     },
     methods: {
       anim: function(styles, timingFunction, duration, callback) {
-        animation.transition(this.$refs.block.ref, {
+        animation.transition(this.$refs.block, {
           styles: styles,
           timingFunction: timingFunction,
           duration: duration
@@ -130,7 +130,7 @@
   };
 </script>
 
-<style>
+<style scoped>
   .block {
     position: absolute;
     width: 250px;

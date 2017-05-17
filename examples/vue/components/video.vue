@@ -11,7 +11,7 @@
   </scroller>
 </template>
 
-<style>
+<style scoped>
   .video {
     width: 750px;
     height: 460px;
@@ -20,7 +20,7 @@
 </style>
 
 <script>
-  var modal = require('@weex-module/modal')
+  var modal = weex.requireModule('modal')
   module.exports = {
     data: function () {
       return {

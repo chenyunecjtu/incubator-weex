@@ -4,9 +4,6 @@
 
 // const WEAPP_STYLE_ID = 'weapp-style'
 
-import frameUpdater from './frameUpdater'
-export { frameUpdater }
-
 import '../../../shared/objectAssign'
 
 export {
@@ -216,3 +213,12 @@ export function kebabToCamel (name) {
     return `${g1.toUpperCase()}`
   })
 }
+
+export function findEnterKeyType (key) {
+  const keys = ['default', 'go', 'next', 'search', 'send']
+  if (keys.indexOf(key) > -1) {
+    return key
+  }
+  return 'done'
+}
+

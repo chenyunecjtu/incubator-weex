@@ -16,6 +16,7 @@
 #import "WXServiceFactory.h"
 #import "WXResourceRequest.h"
 #import "WXResourceLoader.h"
+#import "WXDebugTool.h"
 
 @interface WXBridgeManager ()
 
@@ -71,7 +72,9 @@ static NSThread *WXBridgeThread;
     [[NSRunLoop currentRunLoop] addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
     
     while (!_stopRunning) {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+        @autoreleasepool {
+            [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+        }
     }
 }
 
@@ -163,6 +166,14 @@ void WXPerformBlockOnBridgeThread(void (^block)())
     });
 }
 
+- (void)forceGarbageCollection
+{
+    __weak typeof(self) weakSelf = self;
+    WXPerformBlockOnBridgeThread(^(){
+        [weakSelf.bridgeCtx forceGarbageCollection];
+    });
+}
+
 - (void)refreshInstance:(NSString *)instance
                    data:(NSDictionary *)data
 {
@@ -231,6 +242,8 @@ void WXPerformBlockOnBridgeThread(void (^block)())
     
     __weak typeof(self) weakSelf = self;
     WXPerformBlockOnBridgeThread(^(){
+        // save it when execute
+        [WXDebugTool cacheJsService:name withScript:serviceScript withOptions:options];
         [weakSelf.bridgeCtx executeJsService:script withName:name];
     });
 }
@@ -243,6 +256,8 @@ void WXPerformBlockOnBridgeThread(void (^block)())
     
     __weak typeof(self) weakSelf = self;
     WXPerformBlockOnBridgeThread(^(){
+        // save it when execute
+        [WXDebugTool removeCacheJsService:name];
         [weakSelf.bridgeCtx executeJsService:script withName:name];
     });
 }
